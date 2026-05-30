@@ -38,7 +38,6 @@ const sendOtp = async (req,res) =>
         {
             user = await  new userModel({phoneNumber,phoneSuffix})
         }
-
         await user.save()
         return response (res,200,'OTP sent your number.', user)
     }
