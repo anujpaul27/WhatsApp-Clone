@@ -21,8 +21,8 @@ const userSchema = new mongoose.Schema({
             message: 'Invalid Email Addresss.'
         }
     },
-    emailOpt: {type:String},
-    emailOptExpiry: {type: Date},
+    emailOtp: {type:String},
+    emailOtpExpiry: {type: Date},
     profilePicture: {type: String},
     about: {type: String},
     lastSeen: {type: Date},
