@@ -121,10 +121,10 @@ const verifyOtp = async (req,res)=>
 const updateProfile = async (req,res) => 
 {
     const {username,agreed, about} = req.body;
-    const userId = req.user.userId;
+    const userId = req.user.userID;
     try
     {
-        const user = await  userModel.findById({userId});
+        const user = await  userModel.findById(userId);
         const file = req.file;
         if (file)
         {
@@ -149,4 +149,26 @@ const updateProfile = async (req,res) =>
     }
 }
 
-module.exports = {sendOtp,verifyOtp}
+
+//logOut
+const logout = (req,res)=>
+{
+    try
+    {
+        res.cookie('auth_token','',{expired: new Date(0)})
+        return response(res,200,'user logout successful.')
+    }
+    catch (err)
+    {
+        console.error(err.message)
+        return response (res, 500, 'Internal server error!.')
+
+    }
+}
+
+module.exports = {
+    sendOtp,
+    verifyOtp,
+    updateProfile,
+    logout,
+}
