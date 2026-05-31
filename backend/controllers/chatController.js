@@ -100,4 +100,46 @@ exports.getConversation = async (req, res) => {
   }
 };
 
+// get the specific user message 
+exports.getMessage = (req,res) => 
+{
+    const {conversationId} = req.params;
+    const userId = req.user.userId;
 
+    try
+    {
+        const conversation = await Conversation.findById(conversation)
+
+        if (!conversation)
+        {
+            return response (res, 404, 'Conversation not found.')
+        }
+
+        if (!conversation.participants.includes(userId))
+        {
+            return response(res,404,'not authorized to view this conversation ')
+        }
+
+        const message = await Message.find({conversation: conversationId})
+        .populate("sender", "username profilePicture")
+        .populate("receiver", "username profilePicture")
+        .sort('createAt');
+
+        await Message.updateMany(
+            {
+            conversation: conversationId,
+            receiver: userId,
+            messageStatus: {$in: ['send', "delivered"]},
+            } ,{$set: {messageStatus: 'read'}},
+        )
+
+        conversation.unreadCount = 0
+        await conversation.save()
+        return response(res,200, 'retrive user ', message)
+    }
+    catch (err)
+    {
+        console.error(err.message)
+        response(res,500,'Internal server error.')
+    }
+}
