@@ -24,10 +24,10 @@ const sendOtp = async (req,res) =>
                 user = new userModel({email})
             }
             user.emailOtp = otp
-            user.emailOtpExpire = expiry
+            user.emailOtpExpiry = expiry
             await user.save()
             await sendOtpToEmail(email,otp)
-            return response(res,200,`OTP send to your email`, {email})
+            return response(res,200,`OTP send to your email`, {email,user})
         }
 
         if (!phoneNumber || !phoneSuffix )
@@ -121,7 +121,7 @@ const verifyOtp = async (req,res)=>
 const updateProfile = async (req,res) => 
 {
     const {username,agreed, about} = req.body;
-    const userId = req.user.userID;
+    const userId = req.user.userId;
     try
     {
         const user = await  userModel.findById(userId);
@@ -166,9 +166,35 @@ const logout = (req,res)=>
     }
 }
 
+
+// Check user authenticate or not
+const checkAuthentication = async (req,res) =>
+{
+    try 
+    {
+        const userId = req.user.userId;
+        if (!userId)
+        {
+            return response (res, 404, 'unauthorize, please login before.')
+        }
+        const user = await userModel.findById(userId)
+        if (!user)
+        {
+            return response (res,404,'User Not Found.')
+        }
+        return response(res,200,'user retrived and allow to use DBchat',user)
+    }
+    catch (err)
+    {
+        console.error(err)
+        return response(res,500,'Internal Server Error.')
+    }
+}
+
 module.exports = {
     sendOtp,
     verifyOtp,
     updateProfile,
     logout,
+    checkAuthentication
 }

@@ -8,11 +8,12 @@ const { multerMiddleware } = require('../config/cloudinary.config')
 // routes
 authRoute.post('/send-otp',authController.sendOtp)
 authRoute.post('/verify-otp', authController.verifyOtp)
+authRoute.get('/logout', authController.logout)
 
 
 // protected routes
 authRoute.put('/update-profile', authMiddleware, multerMiddleware, authController.updateProfile)
-authRoute.get('/logout', authController.logout)
+authRoute.get('/check-auth', authMiddleware, authController.checkAuthentication)
 
 
 module.exports = authRoute
