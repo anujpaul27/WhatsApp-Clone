@@ -14,6 +14,6 @@ authRoute.get('/logout', authController.logout)
 // protected routes
 authRoute.put('/update-profile', authMiddleware, multerMiddleware, authController.updateProfile)
 authRoute.get('/check-auth', authMiddleware, authController.checkAuthentication)
-
+authRoute.get('/users', authMiddleware, authController.getAllUser)
 
 module.exports = authRoute

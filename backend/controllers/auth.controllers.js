@@ -5,7 +5,7 @@ const response = require("../utils/response.handler");
 const twilioServices = require('../services/twilio.services');
 const createTokenWithJWT = require("../utils/generate.token");
 const { uploadFileToCloudinary } = require("../config/cloudinary.config");
-
+const Conversation = require('../models/conversation.model')
 
 // step-1 send OPT 
 const sendOtp = async (req,res) =>
@@ -53,7 +53,6 @@ const sendOtp = async (req,res) =>
     }
 
 }
-
 
 // verify email OTP
 const verifyOtp = async (req,res)=>
@@ -116,7 +115,6 @@ const verifyOtp = async (req,res)=>
     }
 }
 
-
 // user profile update
 const updateProfile = async (req,res) => 
 {
@@ -149,7 +147,6 @@ const updateProfile = async (req,res) =>
     }
 }
 
-
 //logOut
 const logout = (req,res)=>
 {
@@ -165,7 +162,6 @@ const logout = (req,res)=>
 
     }
 }
-
 
 // Check user authenticate or not
 const checkAuthentication = async (req,res) =>
@@ -191,10 +187,44 @@ const checkAuthentication = async (req,res) =>
     }
 }
 
+// get all user 
+const getAllUser =async (req,res) =>
+{
+    const loggedInUser = req.user.userId;
+    try 
+    {
+        const allUser = await userModel.find({_id: {$ne:loggedInUser}}).select('username profilePicture about lastSeen isOnline phoneNumber phoneSuffix').lean()
+        
+        const userWithConversation = await Promise.all(
+            allUser.map(async (user)=> {
+                const conversation = await Conversation.findOne({
+                    participants: {$all: [loggedInUser.user?._id]}
+                }).populate({
+                    path: 'lastMessage',
+                    select: 'content createdAt sender receiver'
+                }).lean();
+
+                return {
+                    ...user,
+                    conversation: conversation || null
+                }
+            })
+        )
+        return response(res,200, 'users retrived success' , userWithConversation)
+    }
+    catch (err)
+    {
+        console.error(err)
+        return response(res,500,'Internal Server Error')
+    }
+
+}
+
 module.exports = {
     sendOtp,
     verifyOtp,
     updateProfile,
     logout,
-    checkAuthentication
+    checkAuthentication,
+    getAllUser
 }
