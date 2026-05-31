@@ -22,7 +22,7 @@ const sendOtp = async (req,res) =>
             {
                 user = new userModel({email})
             }
-            user.emailOtp = opt
+            user.emailOtp = otp
             user.emailOtpExpire = expiry
             await user.save()
             await sendOtpToEmail(email,otp)
@@ -81,7 +81,7 @@ const verifyOtp = async (req,res)=>
         }
         else 
         {
-            if (!phoneNumber || phoneSuffix)
+            if (!phoneNumber || !phoneSuffix)
             {
                 return response (res,400, 'Phone Number and phone suffix is required.')
             }
@@ -102,9 +102,17 @@ const verifyOtp = async (req,res)=>
             await user.save();
         }
         const token = createTokenWithJWT(user?._id)
+        res.cookie('auth_token', token, {
+            httpOnly: true,
+            maxAge: 1000* 60 * 60 * 24 * 365
+        })
+        return response(res,200, 'OTP verified successful.', {token,user})
     }
     catch (error)
     {
-
+        console.error(error.message)
+        return response(res,500, 'Interval Server Error.')
     }
 }
+
+module.exports = {sendOtp,verifyOtp}

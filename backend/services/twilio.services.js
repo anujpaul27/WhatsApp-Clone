@@ -31,7 +31,7 @@ const sendOtpPhoneNumber = async (phoneNumber) =>
 }
 
 // OTP verify 
-const otpVerify =  (phoneNumber, otp)=>
+const otpVerify = async (phoneNumber, otp)=>
 {
     try
     {

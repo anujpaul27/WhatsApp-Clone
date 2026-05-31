@@ -3,4 +3,4 @@ const optGenerate = () =>
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-module.exports = optGenerate 
+module.exports = optGenerate

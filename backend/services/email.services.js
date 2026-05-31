@@ -23,7 +23,7 @@ transporter.verify((error,success)=> {
     }
 })
 
-const sendOtpToEmail = async (email)=>
+const sendOtpToEmail = async (email,otp)=>
 {
       const html = `
     <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">

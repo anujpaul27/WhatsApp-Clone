@@ -3,13 +3,22 @@ const cors = require('cors')
 const connectDB = require('./config/db.connect')
 require('dotenv').config()
 const app = express()
+const cookieParser = require('cookie-parser')
+const bodyParser = require('body-parser')
+const authRoute = require('./routes/auth.routers')
 
 // Middleware
-app.use(cors())
-app.use(express.json())
+app.use(cors())         // request from another API
+app.use(express.json()) // parse body data 
+app.use(cookieParser()) // parse toke on every request 
+app.use(bodyParser.urlencoded({extended: true})) // 
 
 // Connect to MongoDB
 connectDB()
+
+
+// routes 
+app.use('/api/auth', authRoute)
 
 
 app.listen(process.env.PORT, () => {

@@ -4,7 +4,7 @@ const userSchema = new mongoose.Schema({
     phoneNumber: {
         type: String,
         unique: true,
-        parse: true,
+        sparse: true, 
     },
     phoneSuffix: {
         type: String,
@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
             validator: function (v) {
                 return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
             },
-            message: 'Invalid Email Addresss.'
+            message: 'Invalid Email Address.'
         }
     },
     emailOtp: {type:String},
