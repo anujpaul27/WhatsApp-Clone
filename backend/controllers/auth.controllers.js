@@ -4,6 +4,7 @@ const optGenerate = require("../utils/opt.generator");
 const response = require("../utils/response.handler");
 const twilioServices = require('../services/twilio.services');
 const createTokenWithJWT = require("../utils/generate.token");
+const { uploadFileToCloudinary } = require("../config/cloudinary.config");
 
 
 // step-1 send OPT 
@@ -112,6 +113,39 @@ const verifyOtp = async (req,res)=>
     {
         console.error(error.message)
         return response(res,500, 'Interval Server Error.')
+    }
+}
+
+
+// user profile update
+const updateProfile = async (req,res) => 
+{
+    const {username,agreed, about} = req.body;
+    const userId = req.user.userId;
+    try
+    {
+        const user = await  userModel.findById({userId});
+        const file = req.file;
+        if (file)
+        {
+            const uploadResult = await uploadFileToCloudinary(file)
+            console.log(uploadResult)
+            user.profilePicture = uploadResult?.secure_url
+        } else if (req.body.profilePicture)
+        {
+            user.profilePicture = req.body.profilePicture
+        }
+
+        if (username) user.username = username
+        if (agreed) user.agreed = agreed
+        if (about) user.about = about
+        await user.save()
+        return response(res,200, 'User Profile update successful.',user)
+    }
+    catch (err)
+    {
+        console.error(err)
+        return response(res,500,'Internal Server Error.')
     }
 }
 
