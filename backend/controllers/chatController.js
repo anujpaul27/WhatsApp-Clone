@@ -143,3 +143,31 @@ exports.getMessage = (req,res) =>
         response(res,500,'Internal server error.')
     }
 }
+
+// mark as read the message status
+exports.markAsRead = async (req,res)=>
+{
+    const {messageId}  = req.body;
+    const userId = req.user.userId;
+
+    try
+    {
+        // get relevant message to determine sender 
+        let messages = await Message.find({
+            _id:{$in:messageId},
+            receiver: userid
+        })
+
+        await Message.updateMany(
+            {_id: {$in: messageId}, receiver: userId},
+            {$set: {messageStatus: 'read'}}
+        )
+
+        return response(res,200,'message marked as read.', messages)
+    }
+    catch (err)
+    {
+
+    }
+}
+
