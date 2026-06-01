@@ -171,3 +171,32 @@ exports.markAsRead = async (req,res)=>
     }
 }
 
+// delete message
+exports.deleteMessage = async (req,res) => 
+{
+    const {messageId} = req.params;
+    const userId = req.user.userId;
+
+    try
+    {
+        const message = await Message.findById({messageId})
+        if (!message)
+        {
+            return response(res,404,'Message not found')
+        }
+
+        if (message.sender.toString() !== userId)
+        {
+            return response(res,403, 'not authorized message to delete')
+        }
+
+        await message.deleteOne();
+        return response(res,200, 'Message Delete success.')
+
+    }
+    catch (err)
+    {
+        console.error(err.message)
+        return response (res,500, 'Internal server error') 
+    }
+}
