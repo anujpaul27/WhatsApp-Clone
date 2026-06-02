@@ -6,6 +6,7 @@ const app = express()
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const authRoute = require('./routes/auth.routers')
+const chatRoute = require('./routes/chat.routers')
 
 // Middleware
 app.use(cors())         // request from another API
@@ -19,6 +20,7 @@ connectDB()
 
 // routes 
 app.use('/api/auth', authRoute)
+app.use('/api/chat', chatRoute)
 
 
 app.listen(process.env.PORT, () => {

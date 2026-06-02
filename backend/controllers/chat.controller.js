@@ -101,14 +101,14 @@ exports.getConversation = async (req, res) => {
 };
 
 // get the specific user message 
-exports.getMessage = (req,res) => 
+exports.getMessage = async (req,res) => 
 {
     const {conversationId} = req.params;
     const userId = req.user.userId;
 
     try
     {
-        const conversation = await Conversation.findById(conversation)
+        const conversation = await Conversation.findById(conversationId)
 
         if (!conversation)
         {
@@ -155,7 +155,7 @@ exports.markAsRead = async (req,res)=>
         // get relevant message to determine sender 
         let messages = await Message.find({
             _id:{$in:messageId},
-            receiver: userid
+            receiver: userId
         })
 
         await Message.updateMany(
@@ -167,7 +167,8 @@ exports.markAsRead = async (req,res)=>
     }
     catch (err)
     {
-
+      console.error(err.message)
+      return response (res,500, 'Internal server error') 
     }
 }
 
@@ -179,7 +180,7 @@ exports.deleteMessage = async (req,res) =>
 
     try
     {
-        const message = await Message.findById({messageId})
+        const message = await Message.findById(messageId)
         if (!message)
         {
             return response(res,404,'Message not found')
