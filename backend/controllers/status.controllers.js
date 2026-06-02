@@ -77,5 +77,53 @@ exports.getStatus = async (req, res) => {
   }
 };
 
+exports.viewStatus = async (req, res) => {
+  const {statusId} = req.params;
+  const userId = req.user.userId;
+
+  try {
+    const status = await statusModel.findById(statusId);
+    if (!status) {
+      return response(res, 404, "Status Not Found.");
+    }
+    if (!status.viewers.include(userId)) {
+      status.viewers.push(userId);
+      status.save();
+
+      const updateStatus = await statusModel
+        .findById(statusId)
+        .populate("user", "username profilePicture")
+        .populate("viewers", "username profilePicture");
+    }
+    return response(res,200, 'user status view successful')
+  } catch (err) {
+    console.error(err);
+    return response(res, 500, "Internal Server Error!.");
+  }
+};
 
 
+exports.deleteStatus = async (req,res) => 
+{
+    const {statusId} = req.params;
+    const userId = req.user.userId;
+
+    try
+    {
+        const status = await statusModel.findById(statusId)
+        if (!status)
+        {
+            return response(res,404,'Status Not Found.')
+        }
+        if (status.user.toString() !== userId)
+        {
+            return response(res,403,'Not auhorized delete this sataus')
+        }
+        await status.deleteOne()
+        return response(res,200,'Status Delete Successful.')
+    }
+    catch (err) {
+    console.error(err);
+    return response(res, 500, "Internal Server Error!.");
+  }
+}
