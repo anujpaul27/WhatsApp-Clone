@@ -226,7 +226,7 @@ const initializeSocket = (server) => {
     socket.on("disconnect", handleDisconnected);
   });
   // attach the online user map to the socket use for external user
-  io.socket.UserMap = onlineUsers;
+  io.socketUserMap = onlineUsers;
   return io;
 };
 
